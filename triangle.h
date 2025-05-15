@@ -14,16 +14,17 @@ class triangle : public hittable {
         edge2 = v0-v2;
         planeNormal = cross(edge0, edge1);
         planeNormal = planeNormal/planeNormal.length();
-        std::cout << planeNormal;
       }
     bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
       //p = intersection point of a ray with a plane
       double d = -dot(planeNormal, v0);
       auto denom = dot(planeNormal, r.direction());
       //if ray is parallel
-      if (denom == 0) 
+      if (fabs(denom) < 1e-6) 
         return false;
-      double t = -(dot(planeNormal,r.origin()) + d)/denom; 
+      if (denom == 0) return false;
+      double t = -(dot(planeNormal,r.origin()) + d)/denom;
+      if (!ray_t.surrounds(t)) return false;
       point3 P = r.at(t);
 
       vec3 c0 = P - v0;
